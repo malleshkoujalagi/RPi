@@ -1,59 +1,4 @@
-
-
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <linux/i2c.h>
-#include <linux/i2c-dev.h>
-#include <fcntl.h>
-#include <sys/ioctl.h>
-#include <linux/types.h>
-#include <unistd.h>
-#include "smbus.h"
-
-/*I2C digital pressure sensor device address*/
-#define BMP085_ADDR  0x77
-
-#define BMP085_CONTROL_REG 0xF4
-#define BMP085_TEMP_VALUE 0x2E
-#define BMP085_OSS 2 /*Oversampling settings*/
-#define FILE_PATH "/dev/i2c-1"
-
-struct __attribute__((__packed__)) bmp085_parameter{
- short int ac1;
- short int ac2;
- short int ac3;
- unsigned short int ac4;
- unsigned short int ac5;
- unsigned short int ac6;
- short int b1;
- short int b2;
- short int mb;
- short int mc;
- short int md;
- short int b5;
-};
-
-
-struct control_reg{
- unsigned short int usCtrRegValue;
- unsigned char maxConvTime;
-};
-
-
-static struct control_reg ctrlReg[] = {
- {0x34,0x5},
- {0x74,0x8},
- {0xB4,0xE},
- {0xF4,0x1A},
-};
-
-struct bmp085_data{
- struct bmp085_parameter ccParameter;
- unsigned int temperature,ut;
- unsigned int pressure,up;
- int fd;
- };
+#include "bmp085.h"
 
 static struct bmp085_data bmp085Data;
 
@@ -87,10 +32,10 @@ __s32 bmp085_i2c_read_long(__u8 addr)
   printf("smbus read word failed: %x", addr);
   exit(1);//return -1;
  }
- printf("reg %x\n",reg);
- printf("**********reg shift %x, %x\n",((reg << 8) & 0xff00),((reg >> 8) & 0xff )); 
+ //printf("reg %x\n",reg);
+ //printf("**********reg shift %x, %x\n",((reg << 8) & 0xff00),((reg >> 8) & 0xff )); 
  reg = (((reg << 8) & 0xff00) | ((reg >> 8) & 0xff )) ;
- printf("reg shift %x, %x\n",reg); 
+ //printf("reg shift %x, %x\n",reg); 
  return reg;
 } 
 
