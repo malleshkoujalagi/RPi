@@ -33,11 +33,10 @@ int bmp085_open()
    close(bmp085Data.fd);
    exit(1);//return -1;
   }
- return 1;
+  return 1;
 }
 
 /*smpbus functions*/
-
 __s32 bmp085_i2c_read_long(__u8 addr)
 {
  __s32 reg = i2c_smbus_read_word_data(bmp085Data.fd, addr);
@@ -53,33 +52,21 @@ __s32 bmp085_i2c_read_long(__u8 addr)
  return reg;
 } 
 
-/*Calibration*/
-
+/*Calibration of Sensor device*/
 void bmp085Calibration()
 {
   
   bmp085Data.ccParameter.ac1 = bmp085_i2c_read_long(0xAA);
-  //printf("ac1, %d\n", bmp085Data.ccParameter.ac1);
   bmp085Data.ccParameter.ac2 = bmp085_i2c_read_long(0xAC);
-  //printf("ac2, %d\n", bmp085Data.ccParameter.ac2);
   bmp085Data.ccParameter.ac3 = bmp085_i2c_read_long(0xAE);
-  //printf("ac3, %d\n", bmp085Data.ccParameter.ac3);
   bmp085Data.ccParameter.ac4 = bmp085_i2c_read_long(0xB0);
-  //printf("ac4, %d\n", bmp085Data.ccParameter.ac4);
   bmp085Data.ccParameter.ac5 = bmp085_i2c_read_long(0xB2);
-  //printf("ac5, %d\n", bmp085Data.ccParameter.ac5);
   bmp085Data.ccParameter.ac6 = bmp085_i2c_read_long(0xB4);
-  //printf("ac6, %d\n", bmp085Data.ccParameter.ac6);
   bmp085Data.ccParameter.b1 = bmp085_i2c_read_long(0xB6);
-  //printf("b1, %d\n", bmp085Data.ccParameter.b1);
   bmp085Data.ccParameter.b2 = bmp085_i2c_read_long(0xB8);
-  //printf("b2, %d\n", bmp085Data.ccParameter.b2);
   bmp085Data.ccParameter.mb = bmp085_i2c_read_long(0xBA);
-  //printf("mb, %d\n", bmp085Data.ccParameter.mb);
   bmp085Data.ccParameter.mc = bmp085_i2c_read_long(0xBC);
-  //printf("mc, %d\n", bmp085Data.ccParameter.mc);
   bmp085Data.ccParameter.md = bmp085_i2c_read_long(0xBE);
-  //printf("md, %d\n", bmp085Data.ccParameter.md);
 
 }
 
@@ -94,36 +81,15 @@ void bmp085_RealTemperature()
  usleep(5000);
  bmp085Data.ut=bmp085_i2c_read_long(0xF6);
 
-//printf("ut %d\n", bmp085Data.ut);
- /* Test real temperature*/
-
- /*
- bmp085Data.ut = 27898;
- bmp085Data.ccParameter.ac1 = 408;
- bmp085Data.ccParameter.ac2 = -72 ;
- bmp085Data.ccParameter.ac3 = -14383;
- bmp085Data.ccParameter.ac4 = 32741;
- bmp085Data.ccParameter.ac5 = 32757;
- bmp085Data.ccParameter.ac6 = 23153;
- bmp085Data.ccParameter.b1 = 6190;
- bmp085Data.ccParameter.b2 = 4;
- bmp085Data.ccParameter.mb = -32767;
- bmp085Data.ccParameter.mc = -8711;
- bmp085Data.ccParameter.md = 2868;
- bmp085Data.up = 23843;*/
-
-
  x1 = (((int)bmp085Data.ut - (int) bmp085Data.ccParameter.ac6) *(int) bmp085Data.ccParameter.ac5) >> 15;
  x2 = (((int)bmp085Data.ccParameter.mc << 11)/(x1+bmp085Data.ccParameter.md));
  bmp085Data.ccParameter.b5 = x1+x2;
  bmp085Data.temperature = (unsigned int)(bmp085Data.ccParameter.b5+8) >> 4;  
- //printf ("Real Tempature %d *C\n", (bmp085Data.temperature/10));
  printf("Temperature\t%0.1f%cC\n", ((double)bmp085Data.temperature)/10,0x00B0);
 }
 
 
 /*Presure Calculation*/
-
 void bmp085_RealPressure()
 {
   int b3,b6,x1,x2,x3,p;
@@ -141,16 +107,10 @@ void bmp085_RealPressure()
   
   
   b6 = bmp085Data.ccParameter.b5 - 4000;
-  //printf("b6 %d\n",b6);
   x1 = (bmp085Data.ccParameter.b2*((b6*b6)>>12)) >> 11;
-  //printf("x1 %d\n",x1);
   x2 = (bmp085Data.ccParameter.ac2*b6) >> 11;
-  //printf("x2 %d\n",x2);
   x3 = x1 + x2;
-  //printf("x3 %d\n",x3);
   b3 =(((bmp085Data.ccParameter.ac1*4+x3) << BMP085_OSS) + 2) >> 2; 
-  //printf("b3 %d\n",b3);
- 
   x1 = (bmp085Data.ccParameter.ac3*b6) >> 13;
   x2 = (bmp085Data.ccParameter.b1*((b6*b6)>>12))>>16;
   x3 = ((x1+x2)+2)>>2;
@@ -164,8 +124,7 @@ void bmp085_RealPressure()
   x1 = (x1*3038) >> 16;
   x2 = (-7357*p) >> 16;
   bmp085Data.pressure = p = p+((x1+x2+3791) >> 4);
- // printf("Real Pressure: %d\n", bmp085Data.pressure);
-//  printf("Temperature\t%0.1f%cC\n", ((double)temperature)/10,0x00B0);
+  
   printf("Pressure\t%0.2fhPa\n", ((double) bmp085Data.pressure)/100);
   printf("Altitude %0.2fm\n", (double)(((bmp085Data.pressure)/100)*8.43)); 
 }
