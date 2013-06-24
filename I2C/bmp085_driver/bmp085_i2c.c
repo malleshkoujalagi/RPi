@@ -7,13 +7,13 @@
 #include "bmp085.h"
 
 
-static int bmp085_i2c_read_byte(void *client, u8 reg){
-   return i2c_smbus_read_byte_data(client, reg);
+static int bmp085_i2c_read_word(void *client, u8 reg){
+   return i2c_smbus_read_word_data(client, reg);
 }
 
-static int bmp085_i2c_write_byte(void *client, u8 reg, u8 value){
+static int bmp085_i2c_write_word(void *client, u8 reg, u8 value){
 
-   return i2c_smbus_write_byte_data(client, reg, value);
+   return i2c_smbus_write_word_data(client, reg, value);
 }
 
 static int bmp085_i2c_read_block(void *client, u8 reg, int len, char *buf){
@@ -22,8 +22,8 @@ static int bmp085_i2c_read_block(void *client, u8 reg, int len, char *buf){
 }
 
 static const struct bmp085_bus_ops bmp085_i2c_bus_ops={
-  .read_byte = bmp085_i2c_read_byte,
-  .wirte_byre = bmp085_i2c_write_byte,
+  .read_word = bmp085_i2c_read_word,
+  .wirte_word = bmp085_i2c_write_word,
   .read_block = bmp085_i2c_read_block,
  };
 

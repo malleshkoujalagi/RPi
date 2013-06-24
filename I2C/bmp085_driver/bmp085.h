@@ -14,8 +14,8 @@ struct bmp085_platform_data {
 };
 
 struct bmp085_bus_ops {
-int (*read_byte)(void *client, u8 reg);
-int (*write_byte)(void *client, u8 reg, u8 value);
+int (*read_word)(void *client, u8 reg);
+int (*write_word)(void *client, u8 reg, u8 value);
 int (*read_block)(void *clinet, u8 reg, int len, char *buf); 
 };
 

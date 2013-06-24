@@ -12,7 +12,59 @@
     GNU General Public License for more details.
 */
 
-#include "bmp085.h"
+#include <linux/types.h>
+#include <linux/init.h>
+
+
+/*I2C digital pressure sensor device address*/
+#define BMP085_ADDR  0x77
+#define BMP085_CONTROL_REG 0xF4
+#define BMP085_TEMP_VALUE 0x2E
+/*TODO*/
+#define BMP085_OSS 2 /*Oversampling settings*/
+#define FILE_PATH "/dev/i2c-1"
+
+
+
+struct __attribute__((__packed__)) bmp085_parameter{
+ s16 ac1;
+ s16 ac2;
+ s16 ac3;
+ u16 ac4;
+ u16 ac5;
+ u16 ac6;
+ s16 b1;
+ s16 b2;
+ s16 mb;
+ s16 mc;
+ s16 md;
+ s16 b5;
+};
+
+/* TODO
+static struct control_reg{
+ unsigned short int usCtrRegValue;
+ unsigned char maxConvTime;
+};
+*/
+
+static struct control_reg ctrlReg[] = {
+ {0x34,0x5},
+ {0x74,0x8},
+ {0xB4,0xE},
+ {0xF4,0x1A},
+};
+
+static struct bmp085_data{
+ struct bmp085_parameter ccParameter;
+ u16 temperature,ut;
+ u16 pressure,up;
+ u16 ctr_reg;
+ u16 max_conv_time;
+
+ };
+
+
 
 static struct bmp085_data bmp085Data;
 
@@ -110,4 +162,16 @@ void bmp085_RealPressure()
   printf("Altitude %0.2fm\n", (double)(((bmp085Data.pressure)/100)*8.43)); 
 }
 
+int __devinit bmp085_probe(struct device *dev, struct bmp085_data_bus *data_bus){
 
+
+}
+
+int __devexit bmp085_remove(struct device *dev){
+
+
+}
+
+MODULE_AUTHOR("mallesh.koujalagi@gmail.com");
+MODULE_DISCRIPTION("BMP085 driver");
+MODULE_LICENSE("GPL");
